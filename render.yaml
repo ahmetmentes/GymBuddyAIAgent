@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: gymbuddy-api
+    runtime: docker
+    plan: free
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: PORT
+        value: 8080
+    healthCheckPath: /health

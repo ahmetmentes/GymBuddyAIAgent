@@ -24,5 +24,9 @@ dependencies {
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
     implementation(libs.koogAgents)
-    implementation("ai.koog:prompt-executor-google-client:1.0.0-beta")
+}
+
+val copyWebDist = tasks.register<Copy>("copyWebDist") {
+    from(project(":app:webApp").layout.buildDirectory.dir("dist/wasmJs/productionExecutable"))
+    into(layout.buildDirectory.dir("resources/main/static"))
 }

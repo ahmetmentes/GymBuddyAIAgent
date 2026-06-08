@@ -14,6 +14,10 @@ class ChatViewModel : ViewModel() {
     val messages = mutableStateListOf<ChatMessage>()
     val isLoading = mutableStateOf(false)
 
+    init {
+        messages.add(ChatMessage(text = "Hello! I'm your Gym Buddy AI Agent. How can I help you with your fitness journey today?", isUser = false))
+    }
+
     fun sendMessage(text: String) {
         if (text.isBlank()) return
 
