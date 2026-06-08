@@ -1,3 +1,9 @@
+# GymBuddy AI Agent
+
+GymBuddy is an AI-powered fitness assistant that helps you with workout planning, exercise guidance, and fitness-related questions through a conversational interface. It runs as a cross-platform app (Android, iOS, Web, Desktop) backed by a Ktor server that uses [Koog Agents](https://github.com/JetBrains/koog) with Google's Gemini model to power the AI chat.
+
+## Project Structure
+
 This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM), Server.
 
 * [/app/iosApp](./app/iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose
