@@ -51,6 +51,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.ktor.clientOkhttp)
+            implementation(libs.androidx.navigation.compose) // Android-specific navigation
         }
         commonMain.dependencies {
             api(projects.core)
@@ -62,6 +63,9 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.compose.animation) // Compose Multiplatform animation
+            implementation(libs.compose.materialIconsExtended) // Added for Compose Multiplatform Icons
+            implementation(libs.compose.uiGraphics) // Added for Compose Multiplatform Color
             implementation(libs.ktor.clientCore)
             implementation(libs.ktor.clientContentNegotiation)
             implementation(libs.ktor.serializationJson)
@@ -71,6 +75,9 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.clientDarwin)
+            implementation(libs.compose.animation) // Explicitly added for iOS
+            implementation(libs.compose.materialIconsExtended) // Explicitly added for iOS
+            implementation(libs.compose.uiGraphics) // Explicitly added for iOS
         }
         jvmMain.dependencies {
             implementation(libs.ktor.clientOkhttp)

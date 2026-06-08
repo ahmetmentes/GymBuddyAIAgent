@@ -2,6 +2,8 @@ package com.gymbuddyaiagent
 
 import web.navigator.navigator
 
+import kotlinx.browser.window
+
 class JsPlatform : Platform {
     private val userAgent = navigator.userAgent
     private val browserList = listOf("Chrome", "Firefox", "Safari", "Edge")
@@ -13,4 +15,11 @@ class JsPlatform : Platform {
 
 actual fun getPlatform(): Platform = JsPlatform()
 
-actual fun getBaseUrl(): String = "http://localhost:8080"
+actual fun getBaseUrl(): String {
+    val origin = window.location.origin
+    return if (origin.isEmpty() || origin.startsWith("file")) {
+        "http://localhost:8080"
+    } else {
+        origin
+    }
+}

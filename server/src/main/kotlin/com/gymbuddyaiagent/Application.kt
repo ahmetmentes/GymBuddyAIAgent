@@ -1,10 +1,11 @@
 package com.gymbuddyaiagent
 
 import ai.koog.agents.core.agent.AIAgent
-import ai.koog.prompt.executor.clients.google.GoogleLLMClient
-import ai.koog.prompt.executor.clients.google.GoogleModels
+import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
+import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
 import ai.koog.prompt.executor.llms.MultiLLMPromptExecutor
-import io.ktor.http.*
+import ai.koog.prompt.llm.LLModel
+import ai.koog.prompt.llm.LLMProvider
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -13,6 +14,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.http.content.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -26,15 +28,27 @@ fun main() {
     val apiKey = System.getenv("GOOGLE_API_KEY")
         ?: error("GOOGLE_API_KEY environment variable is not set.")
 
-    val googleClient = GoogleLLMClient(apiKey)
-    val executor = MultiLLMPromptExecutor(googleClient)
+    val geminiClient = OpenAILLMClient(
+        apiKey = apiKey,
+        settings = OpenAIClientSettings(
+            baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai"
+        )
+    )
+    val executor = MultiLLMPromptExecutor(geminiClient)
+
+    val geminiModel = LLModel(
+        provider = LLMProvider.Google,
+        id = "gemini-2.5-pro"
+    )
 
     val agent = AIAgent.builder()
         .promptExecutor(executor)
-        .llmModel(GoogleModels.Gemini2_5Pro)
+        .llmModel(geminiModel)
         .build()
 
-    embeddedServer(Netty, port = 8080) {
+    val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
+
+    embeddedServer(Netty, port = port) {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
@@ -47,6 +61,7 @@ fun main() {
             get("/health") {
                 call.respondText("OK")
             }
+            staticResources("/", "static")
         }
     }.start(wait = true)
 }
