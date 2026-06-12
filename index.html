@@ -245,7 +245,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
-        import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAwuiexeOsZci3-vLvER1hgBhF8p_gFjjY",
@@ -298,12 +298,14 @@
             }
         });
 
-        // Check redirect result on page load
-        getRedirectResult(auth).catch(e => console.error('Redirect error:', e));
-
         // Sign in
-        document.getElementById('google-signin').addEventListener('click', () => {
-            signInWithRedirect(auth, provider);
+        document.getElementById('google-signin').addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (e) {
+                console.error('Sign-in error:', e);
+                alert('Sign-in failed: ' + e.message);
+            }
         });
 
         // Sign out
