@@ -49,9 +49,10 @@
             justify-content: center;
             gap: 24px;
             padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        .login-screen h1 { font-size: 28px; color: #333; }
-        .login-screen p { color: #666; text-align: center; }
+        .login-screen h1 { font-size: 28px; color: white; }
+        .login-screen p { color: rgba(255,255,255,0.9); text-align: center; }
         .google-btn {
             display: flex; align-items: center; gap: 12px;
             padding: 12px 24px;
@@ -244,7 +245,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+        import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAwuiexeOsZci3-vLvER1hgBhF8p_gFjjY",
@@ -297,9 +298,12 @@
             }
         });
 
+        // Check redirect result on page load
+        getRedirectResult(auth).catch(e => console.error('Redirect error:', e));
+
         // Sign in
         document.getElementById('google-signin').addEventListener('click', () => {
-            signInWithPopup(auth, provider);
+            signInWithRedirect(auth, provider);
         });
 
         // Sign out
