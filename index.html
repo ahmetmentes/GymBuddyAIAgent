@@ -20,11 +20,105 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 16px 20px;
+            padding: 12px 20px;
             font-size: 18px;
             font-weight: 600;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .header-actions button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .header-actions button:hover { background: rgba(255,255,255,0.3); }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+        }
+        .login-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            padding: 40px;
+        }
+        .login-screen h1 { font-size: 28px; color: #333; }
+        .login-screen p { color: #666; text-align: center; }
+        .google-btn {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 24px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #333;
+        }
+        .google-btn:hover { background: #f8f8f8; border-color: #bbb; }
+        .google-btn img { width: 20px; height: 20px; }
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            transform: translateX(-100%);
+            transition: transform 0.2s;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        .sidebar-header button { background: none; border: none; font-size: 20px; cursor: pointer; }
+        .session-list { flex: 1; overflow-y: auto; padding: 8px; }
+        .session-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .session-item:hover { background: #f0f0f0; }
+        .session-item.active { background: #e8e0ff; }
+        .new-chat-btn {
+            margin: 8px;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .new-chat-btn:hover { background: #5a6fd6; }
+        .overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 99;
+            display: none;
+        }
+        .overlay.open { display: block; }
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -75,9 +169,7 @@
             font-size: 16px;
             outline: none;
         }
-        .input-area input:focus {
-            border-color: #667eea;
-        }
+        .input-area input:focus { border-color: #667eea; }
         .input-area button {
             padding: 12px 20px;
             background: #667eea;
@@ -88,13 +180,8 @@
             cursor: pointer;
             font-weight: 500;
         }
-        .input-area button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .input-area button:hover:not(:disabled) {
-            background: #5a6fd6;
-        }
+        .input-area button:disabled { background: #ccc; cursor: not-allowed; }
+        .input-area button:hover:not(:disabled) { background: #5a6fd6; }
         .typing {
             align-self: flex-start;
             background: white;
@@ -107,32 +194,189 @@
         }
         @media (max-width: 600px) {
             .message { max-width: 90%; }
+            body { border: none; }
         }
     </style>
 </head>
 <body>
-    <div class="header">GymBuddy AI</div>
-    <div class="chat-container" id="chat">
-        <div class="message assistant">Hello! I'm your Gym Buddy AI Agent. How can I help you with your fitness journey today?</div>
-    </div>
-    <div class="input-area">
-        <input type="text" id="input" placeholder="Type a message..." autocomplete="off">
-        <button id="send">Send</button>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+        <h1>GymBuddy AI</h1>
+        <p>Your AI fitness coach. Sign in to save your chat history and get personalized guidance.</p>
+        <button class="google-btn" id="google-signin">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+            Sign in with Google
+        </button>
     </div>
 
-    <script>
+    <!-- Chat Screen (hidden until login) -->
+    <div id="chat-screen" style="display:none; flex:1; flex-direction:column;">
+        <div class="header">
+            <div class="header-actions">
+                <button id="menu-btn">&#9776;</button>
+                <span>GymBuddy AI</span>
+            </div>
+            <div class="header-actions">
+                <img id="user-avatar" class="user-avatar" src="" alt="" style="display:none">
+                <button id="signout-btn">Sign out</button>
+            </div>
+        </div>
+        <div class="chat-container" id="chat">
+            <div class="message assistant">Hello! I'm your Gym Buddy AI Agent. How can I help you with your fitness journey today?</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="input" placeholder="Type a message..." autocomplete="off">
+            <button id="send">Send</button>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="overlay" id="overlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>Chat History</span>
+            <button id="close-sidebar">&times;</button>
+        </div>
+        <button class="new-chat-btn" id="new-chat-btn">+ New Chat</button>
+        <div class="session-list" id="session-list"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwuiexeOsZci3-vLvER1hgBhF8p_gFjjY",
+            authDomain: "gymbuddyaiagent.firebaseapp.com",
+            projectId: "gymbuddyaiagent",
+            storageBucket: "gymbuddyaiagent.firebasestorage.app",
+            messagingSenderId: "1074562561402",
+            appId: "1:1074562561402:web:cb34213c13a986767352c3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
         const API_URL = 'https://gymbuddy-api-1074562561402.us-central1.run.app';
+
+        let currentUser = null;
+        let idToken = null;
+        let currentSessionId = null;
+        let sessions = [];
+
+        // DOM elements
+        const loginScreen = document.getElementById('login-screen');
+        const chatScreen = document.getElementById('chat-screen');
         const chat = document.getElementById('chat');
         const input = document.getElementById('input');
         const sendBtn = document.getElementById('send');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const sessionList = document.getElementById('session-list');
 
+        // Auth state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                idToken = await user.getIdToken();
+                loginScreen.style.display = 'none';
+                chatScreen.style.display = 'flex';
+                const avatar = document.getElementById('user-avatar');
+                if (user.photoURL) {
+                    avatar.src = user.photoURL;
+                    avatar.style.display = 'block';
+                }
+                loadSessions();
+            } else {
+                currentUser = null;
+                idToken = null;
+                loginScreen.style.display = 'flex';
+                chatScreen.style.display = 'none';
+            }
+        });
+
+        // Sign in
+        document.getElementById('google-signin').addEventListener('click', () => {
+            signInWithPopup(auth, provider);
+        });
+
+        // Sign out
+        document.getElementById('signout-btn').addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // Sidebar
+        document.getElementById('menu-btn').addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('open');
+        });
+        document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        }
+
+        // New chat
+        document.getElementById('new-chat-btn').addEventListener('click', () => {
+            currentSessionId = null;
+            chat.innerHTML = '<div class="message assistant">Hello! I\'m your Gym Buddy AI Agent. How can I help you with your fitness journey today?</div>';
+            closeSidebar();
+        });
+
+        // Load sessions
+        async function loadSessions() {
+            try {
+                const res = await fetch(`${API_URL}/sessions`, {
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+                if (res.ok) {
+                    sessions = await res.json();
+                    renderSessions();
+                }
+            } catch (e) { console.error('Failed to load sessions', e); }
+        }
+
+        function renderSessions() {
+            sessionList.innerHTML = '';
+            sessions.forEach(s => {
+                const div = document.createElement('div');
+                div.className = `session-item${s.id === currentSessionId ? ' active' : ''}`;
+                div.textContent = s.title;
+                div.addEventListener('click', () => loadSession(s.id));
+                sessionList.appendChild(div);
+            });
+        }
+
+        async function loadSession(sessionId) {
+            currentSessionId = sessionId;
+            closeSidebar();
+            chat.innerHTML = '';
+
+            try {
+                const res = await fetch(`${API_URL}/sessions/${sessionId}/messages`, {
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+                if (res.ok) {
+                    const messages = await res.json();
+                    messages.forEach(m => addMessage(m.text, m.isUser ? 'user' : 'assistant'));
+                }
+            } catch (e) {
+                addMessage('Error loading messages', 'error');
+            }
+            renderSessions();
+        }
+
+        // Chat
         function addMessage(text, type) {
             const div = document.createElement('div');
             div.className = `message ${type}`;
             div.textContent = text;
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
-            return div;
         }
 
         function showTyping() {
@@ -153,6 +397,9 @@
             const text = input.value.trim();
             if (!text) return;
 
+            // Refresh token if needed
+            idToken = await currentUser.getIdToken();
+
             input.value = '';
             addMessage(text, 'user');
             sendBtn.disabled = true;
@@ -162,8 +409,11 @@
             try {
                 const res = await fetch(`${API_URL}/chat`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`
+                    },
+                    body: JSON.stringify({ message: text, sessionId: currentSessionId })
                 });
 
                 removeTyping();
@@ -174,6 +424,10 @@
                 } else {
                     const data = await res.json();
                     addMessage(data.reply, 'assistant');
+                    if (!currentSessionId) {
+                        currentSessionId = data.sessionId;
+                        loadSessions();
+                    }
                 }
             } catch (e) {
                 removeTyping();
@@ -189,7 +443,6 @@
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
-        input.focus();
     </script>
 </body>
 </html>

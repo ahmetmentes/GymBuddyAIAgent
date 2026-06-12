@@ -1,0 +1,27 @@
+[debug] [2026-06-11T19:35:38.500Z] ----------------------------------------------------------------------
+[debug] [2026-06-11T19:35:38.501Z] Command:       /Users/ahmentes/.nvm/versions/node/v18.20.8/bin/node /Users/ahmentes/.nvm/versions/node/v18.20.8/bin/firebase projects:addfirebase gymbuddyaiagent
+[debug] [2026-06-11T19:35:38.501Z] CLI Version:   13.35.1
+[debug] [2026-06-11T19:35:38.501Z] Platform:      darwin
+[debug] [2026-06-11T19:35:38.501Z] Node Version:  v18.20.8
+[debug] [2026-06-11T19:35:38.506Z] Time:          Thu Jun 11 2026 21:35:38 GMT+0200 (Central European Summer Time)
+[debug] [2026-06-11T19:35:38.506Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-06-11T19:35:38.514Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-06-11T19:35:38.514Z] > authorizing via signed-in user (hello@gymbuddyaiagent.com)
+[debug] [2026-06-11T19:35:38.516Z] Checked if tokens are valid: false, expires at: 1781196593569
+[debug] [2026-06-11T19:35:38.516Z] Checked if tokens are valid: false, expires at: 1781196593569
+[debug] [2026-06-11T19:35:38.516Z] > refreshing access token with scopes: []
+[debug] [2026-06-11T19:35:38.517Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-06-11T19:35:38.517Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-11T19:35:38.689Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-06-11T19:35:38.689Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-11T19:35:38.742Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1beta1/projects/gymbuddyaiagent:addFirebase [none]
+[debug] [2026-06-11T19:35:39.279Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1beta1/projects/gymbuddyaiagent:addFirebase 403
+[debug] [2026-06-11T19:35:39.280Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1beta1/projects/gymbuddyaiagent:addFirebase {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2026-06-11T19:35:39.280Z] Request to https://firebase.googleapis.com/v1beta1/projects/gymbuddyaiagent:addFirebase had HTTP Error: 403, The caller does not have permission
+[debug] [2026-06-11T19:35:39.432Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/gymbuddyaiagent:addFirebase had HTTP Error: 403, The caller does not have permission
+    at responseToError (/Users/ahmentes/.nvm/versions/node/v18.20.8/lib/node_modules/firebase-tools/lib/responseToError.js:52:12)
+    at RetryOperation._fn (/Users/ahmentes/.nvm/versions/node/v18.20.8/lib/node_modules/firebase-tools/lib/apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to add Firebase to Google Cloud Platform project. See firebase-debug.log for more info.
